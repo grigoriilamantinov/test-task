@@ -1,13 +1,13 @@
-package org.example;
+package org.example.dto;
 
 public class ResultLineDTO {
-    private String firstLine;
-    private String secondLine;
-    private Integer highestNumberMatches;
+    private final String firstLine;
+    private String wordForUnion;
+    private final Integer highestNumberMatches;
 
     public ResultLineDTO(String firstLine, String secondLine, Integer highestNumberMatches) {
         this.firstLine = firstLine;
-        this.secondLine = secondLine;
+        this.wordForUnion = secondLine;
         this.highestNumberMatches = highestNumberMatches;
     }
 
@@ -16,31 +16,23 @@ public class ResultLineDTO {
         return firstLine;
     }
 
-    public void setFirstLine(String firstLine) {
-        this.firstLine = firstLine;
+    public String getWordForUnion() {
+        return wordForUnion;
     }
 
-    public String getSecondLine() {
-        return secondLine;
-    }
-
-    public void setSecondLine(String secondLine) {
-        this.secondLine = secondLine;
+    public void setWordForUnion(String wordForUnion) {
+        this.wordForUnion = wordForUnion;
     }
 
     public Integer getHighestNumberMatches() {
         return highestNumberMatches;
     }
 
-    public void setHighestNumberMatches(Integer highestNumberMatches) {
-        this.highestNumberMatches = highestNumberMatches;
-    }
-
     @Override
     public String toString() {
         return "ResultLineDTO{" +
             "firstLine='" + firstLine + '\'' +
-            ", secondLine='" + secondLine + '\'' +
+            ", secondLine='" + wordForUnion + '\'' +
             ", highestNumberMatches=" + highestNumberMatches +
             '}';
     }

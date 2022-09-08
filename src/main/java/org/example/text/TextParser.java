@@ -1,4 +1,6 @@
-package org.example;
+package org.example.text;
+
+import org.example.dto.DataForUnion;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -8,24 +10,23 @@ public class TextParser {
     private final static Pattern amountStrings = Pattern.compile("^\\d+$");
     private final static Pattern anyLetter = Pattern.compile("[а-яА-Я]");
 
-    public InputTextDTO parseData (List<String> inputText) {
+    public DataForUnion parseData (List<String> inputText) {
         Matcher amountStringsMatcher;
         Matcher anyLetterMatcher;
         int counter = 0;
-        InputTextDTO inputTextDTO = new InputTextDTO();
-        for (int i = 0; i < inputText.size(); i++) {
-            String line = inputText.get(i);
+        DataForUnion inputTextDTO = new DataForUnion();
+        for (String line : inputText) {
             amountStringsMatcher = amountStrings.matcher(line);
             anyLetterMatcher = anyLetter.matcher(line);
             if (amountStringsMatcher.find()) {
                 counter++;
             }
             if (counter == 1) {
-                if(anyLetterMatcher.find()) {
+                if (anyLetterMatcher.find()) {
                     inputTextDTO.getFirstStrings().add(line);
                 }
             } else {
-                if(anyLetterMatcher.find()) {
+                if (anyLetterMatcher.find()) {
                     inputTextDTO.getSecondStrings().add(line);
                 }
             }

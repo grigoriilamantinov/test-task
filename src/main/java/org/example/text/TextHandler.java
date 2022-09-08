@@ -1,7 +1,8 @@
-package org.example;
+package org.example.text;
+
+import org.example.dto.ResultLineDTO;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class TextHandler {
@@ -32,48 +32,45 @@ public class TextHandler {
             isReverse = true;
         }
 
-        var iteratorHighestList = highestList.iterator();
-        while (iteratorHighestList.hasNext()) {
-            var line1 = iteratorHighestList.next();
-            var iterator = smallestList.iterator();
+        for (String firstLine : highestList) {
+            var iteratorSmallestList = smallestList.iterator();
             highestNumberMatches = 0;
-            while (iterator.hasNext()) {
-                var line2 = iterator.next();
-                var counter = this.getNumberIdenticalLettersInline(line1, line2);
+            while (iteratorSmallestList.hasNext()) {
+                var secondLine = iteratorSmallestList.next();
+                var counter = this.getNumberIdenticalLettersInline(firstLine, secondLine);
                 if (counter > highestNumberMatches) {
                     highestNumberMatches = counter;
-                    wordForUnion = line2;
+                    wordForUnion = secondLine;
                 }
             }
-                resultLineDTOs.add(new ResultLineDTO(line1, wordForUnion, highestNumberMatches));
-            wordForUnion = "?";
+            resultLineDTOs.add(new ResultLineDTO(firstLine, wordForUnion, highestNumberMatches));
         }
-        var b = this.formatToStrings(this.cleanData(resultLineDTOs), isReverse);
-        System.out.println(b);
-        return b;
+        var resultLineDTOWithMarks = this.removeDuplicatesFromWordForUnion(resultLineDTOs);
+
+        return this.formatToStrings(resultLineDTOWithMarks, isReverse);
     }
 
     private List<String> formatToStrings(List<ResultLineDTO> resultLineDTO, boolean isReverse) {
         List<String> result = new ArrayList<>();
         if (isReverse) {
             for(ResultLineDTO it : resultLineDTO) {
-                if (it.getSecondLine().equals("?")) {
-                    result.add(it.getFirstLine() + ":" + it.getSecondLine());
+                if (it.getWordForUnion().equals("?")) {
+                    result.add(it.getFirstLine() + ":" + it.getWordForUnion());
                 } else {
-                    result.add(it.getSecondLine() + ":" + it.getFirstLine());
+                    result.add(it.getWordForUnion() + ":" + it.getFirstLine());
                 }
             }
         } else {
             result = resultLineDTO.stream()
-                .map(it -> it.getFirstLine() + ":" + it.getSecondLine())
+                .map(it -> it.getFirstLine() + ":" + it.getWordForUnion())
                 .collect(Collectors.toList());
         }
         return result;
     }
 
-    private List<ResultLineDTO> cleanData(List<ResultLineDTO> resultLineDTOs) {
-        var secondLines = resultLineDTOs.stream()
-            .map(resultLine -> resultLine.getSecondLine())
+    private List<ResultLineDTO> removeDuplicatesFromWordForUnion(final List<ResultLineDTO> resultLineDTOs) {
+        final var secondLines = resultLineDTOs.stream()
+            .map(ResultLineDTO::getWordForUnion)
             .collect(Collectors.toList());
         Map<String, Integer> valuesCounter = new HashMap<>();
 
@@ -87,16 +84,16 @@ public class TextHandler {
         }
         for (String value : secondLines) {
             if (valuesCounter.get(value) > 1) {
-                var list = resultLineDTOs.stream()
-                    .filter(resultLineDTO -> resultLineDTO.getSecondLine().equals(value))
+                final var list = resultLineDTOs.stream()
+                    .filter(resultLineDTO -> resultLineDTO.getWordForUnion().equals(value))
                     .collect(Collectors.toList());
-                var maxCounter = list.stream()
+                final var maxCounter = list.stream()
                     .max(Comparator.comparing(ResultLineDTO::getHighestNumberMatches))
                     .orElseThrow()
                     .getHighestNumberMatches();
                 for (ResultLineDTO resultLineDTO : list) {
                     if (!Objects.equals(resultLineDTO.getHighestNumberMatches(), maxCounter)) {
-                        resultLineDTO.setSecondLine("?");
+                        resultLineDTO.setWordForUnion("?");
                     }
                 }
             }
@@ -104,15 +101,15 @@ public class TextHandler {
         return resultLineDTOs;
     }
 
-    private int getNumberIdenticalLettersInline(String inputLine1, String inputLine2) {
-        var line1 = inputLine1.toCharArray();
-        Set<Character> setFromLine1 = new HashSet<>();
+    private int getNumberIdenticalLettersInline(final String inputLine1, final String inputLine2) {
+        final var line1 = inputLine1.toCharArray();
+        final Set<Character> setFromLine1 = new HashSet<>();
         for (Character symbol : line1) {
             setFromLine1.add(symbol);
         }
 
         var line2 = inputLine2.toCharArray();
-        Set<Character> setFromLine2 = new HashSet<>();
+        final Set<Character> setFromLine2 = new HashSet<>();
         for (Character symbol : line2) {
             setFromLine2.add(symbol);
         }
